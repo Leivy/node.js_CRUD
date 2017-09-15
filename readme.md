@@ -1,4 +1,5 @@
 #crud-students.manger
+
 Node.js 实现增删改查,页面简陋,功能齐全,转载请注明出处,谢谢!
 1.  引入 express 框架, 简化代码;
 ```js
@@ -24,7 +25,7 @@ res.render('edit', {
 ```
 3. 引入 body-parser 插件,挂载后,可直接使用 `req.body` 拿到请求体;
 ```js
-var bodyParser = require('body-parser);
+var bodyParser = require('body-parser');
 // 3. 挂载一个 body-parser 的中间件
 app.use(bodyParser.urlencoded({
   extended: false
