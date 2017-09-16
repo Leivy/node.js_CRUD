@@ -1,79 +1,98 @@
+// 数据操作模块
+
+
+
+// 1. 加载 mongodb 模块
 var mongodb = require('mongodb');
+// 加载 config 模块
+var config = require('./config.js');
 
-//1. 查找数据库所有数据并返回
-module.exports.findAll = function (collectionname, url, callback) {
+
+// 2. 封装一个连接数据库的方法
+function connectDB(callback) {
   var MongoClient = mongodb.MongoClient;
-
-  MongoClient.connect(url, function (err, db) {
-    // Create a collection we want to drop later
-    db.collection(collectionname).find().toArray(function (err, items) {
-      db.close();
-      //返回err和db
-      callback(err, items);
-    });
-  });
-};
-
-//2. 根据_id查找对应的数据
-module.exports.findOne = function (collectionname, url, id, callback) {
-  var MongoClient = mongodb.MongoClient;
-
-  MongoClient.connect(url, function (err, db) {
-    // Create a collection we want to drop later
-    db.collection(collectionname).find({
-      _id: id
-    }).toArray(function (err, items) {
-      db.close();
-      //返回err和db
-      callback(err, items);
-    });
-  });
-};
-
-//3. 添加学员
-module.exports.addOne = function (model, url, callback) {
-  var MongoClient = mongodb.MongoClient;
-
-  MongoClient.connect(url, function (err, db) {
-    // Create a collection we want to drop later
-    db.collection('students').insertOne(model, function (err, r) {
-      // Finish up test
-      db.close();
-      callback(err, r);
-    });
-  });
-};
-
-//4. 删除学员
-module.exports.deleteOne = function (url, objID, callback) {
-  var MongoClient = mongodb.MongoClient;
-
-  MongoClient.connect(url, function (err, db) {
-    // Create a collection we want to drop later
-    var model = db.collection('students').findOne({
-      _id: objID
-    }, function (err, model) {
-      db.collection('students').deleteOne(model, function (err, r) {
-        // Finish up test
-        db.close();
-        callback(err, r);
-      });
-    })
-
+  MongoClient.connect(config.url, function (err, db) {
+    // 把连接结果通过 callback 函数传递出去
+    callback(err, db);
   });
 }
 
-//5. 编辑
-module.exports.editOne = function (url, objID, model, callback) {
-  var MongoClient = mongodb.MongoClient;
-  MongoClient.connect(url, function (err, db) {
-    // Get the collection
-    db.collection('students').updateOne({
-      _id: objID
-    }, model, function (err, r) {
-      // Finish up test
+
+// 3. 封装一个查询某个集合中所有数据的方法
+module.exports.findAll = function (collectionName, callback) {
+  connectDB(function (err, db) {
+    if (err) {
+      throw err;
+    }
+
+    db.collection(collectionName).find().toArray(function (err, docs) {
       db.close();
-      callback(err, r);
+      callback(err, docs);
+    });
+  });
+};
+
+
+
+// 4. 封装一个插入数据库的方法
+module.exports.insertOne = function (collectionName, data, callback) {
+  connectDB(function (err, db) {
+    if (err) {
+      throw err;
+    }
+    db.collection(collectionName).insertOne(data, function (err, result) {
+      db.close();
+      callback(err, result);
+    });
+  });
+};
+
+// 5. 把 字符串转换为 ObjectID类型
+module.exports.ObjectID = function (strId) {
+  return new mongodb.ObjectID(strId);
+};
+
+
+// 6. 封装一个查询单条数据的方法
+module.exports.findOne = function (collectionName, filter, callback) {
+  connectDB(function (err, db) {
+    if (err) {
+      throw err;
+    }
+    db.collection(collectionName).findOne(filter, function (err, doc) {
+      db.close();
+
+      callback(err, doc);
+    });
+  });
+};
+
+
+// 7. 封装一个删除方法
+module.exports.deleteOne = function (collectionName, filter, callback) {
+  connectDB(function (err, db) {
+    if (err) {
+      throw err;
+    }
+
+    db.collection(collectionName).deleteOne(filter, function (err, result) {
+      db.close();
+      callback(err, result);
+    });
+  });
+};
+
+
+
+// 8. 封装一个 更新数据的方法
+module.exports.updateOne = function (collectionName, filter, data, callback) {
+  connectDB(function (err, db) {
+    if (err) {
+      throw err;
+    }
+    db.collection(collectionName).updateOne(filter, data, function (err, result) {
+      db.close();
+      callback(err, result);
     });
   });
 };

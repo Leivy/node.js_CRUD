@@ -1,29 +1,33 @@
-var express = require('express');
-var app = express();
-// 引入核心模块
-var path = require('path');
-// 引入各个模块
-var router = require('./router.js');
-var config = require('./config.js');
-var bodyParser = require('body-parser');
 
-// 1. 先设置模板引擎的文件后缀
+// 加载 express 模块
+var express = require('express');
+// 加载 config 模块
+var config = require('./config.js');
+var path = require('path');
+var boydParser = require('body-parser');
+// 加载路由模块
+var router = require('./router.js');
+
+// 创建 app 对象
+var app = express();
+
+// 做一些挂载操作（挂载 body-parser中间价、设置模板引擎、挂载路由）
+// 1. 设置模板引擎
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 
-// 3. 挂载一个 body-parser 的中间件
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
-// 2. 引入路由
+// 2. 挂载一个 body-parser 中间件
+app.use(boydParser.urlencoded({extended: false}));
+
+
+// 3. 挂载路由模块
 app.use(router);
 
 
 
-
-// 结束响应
+// 启动服务
 app.listen(config.port, function () {
   console.log('http://localhost:' + config.port);
-})
+});

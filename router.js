@@ -1,19 +1,55 @@
+// 路由模块
+
+
 var express = require('express');
-var router = express.Router();
-// 引入模块
+// 加载 handler 模块
 var handler = require('./handler.js');
 
-// 设置路由
+// 1. 创建路由对象
+var router = express.Router();
+
+
+// 2. 设置路由
+
+// 首页
 router.get('/', handler.get.index);
 router.get('/index', handler.get.index);
-router.get('/students', handler.get.students);
-router.use('/info', handler.get.info);
+
+
+
+// 学员列表
+router.get('/students',handler.get.students);
+
+
+// 显示添加学员页面
 router.get('/add', handler.get.add);
+
+
+
+// 处理添加一位学员
 router.post('/add', handler.post.add);
-router.use('/delete', handler.get.delete);
-router.use('/edit', handler.get.edit);
+
+
+// 显示学员详情
+router.get('/info', handler.get.info);
+
+// 删除一条学员
+router.get('/delete', handler.get.delete);
+
+
+// 显示编辑学员页面
+router.get('/edit', handler.get.edit);
+
+
+// 保存更新的学员
 router.post('/edit', handler.post.edit);
 
 
-// 输出 router 模块
+
+
+
+
+
+
+// 3. 返回路由对象
 module.exports = router;
